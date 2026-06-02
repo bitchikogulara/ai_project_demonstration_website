@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Convergence System — AI Research Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for beautiful dashboard icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    
+    <!-- Cyber Background Grid/Glows -->
+    <div class="cyber-grid"></div>
+    <div class="cyber-glow bg-cyan"></div>
+    <div class="cyber-glow bg-magenta"></div>
+
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-main">
+                <div class="logo-area">
+                    <div class="neon-pacman-logo">
+                        <i class="fa-solid fa-ghost logo-ghost"></i>
+                        <span class="logo-text">PAC-MAN<span class="neon-text">CONVERGENCE</span></span>
+                    </div>
+                    <p class="header-tagline">Multi-Agent State Space Search & Heuristic Optimization Sandbox</p>
+                </div>
+                <div class="academic-badge">
+                    <div class="badge-item"><i class="fa-solid fa-graduation-cap"></i> <span>Université d’Évry Paris-Saclay</span></div>
+                    <div class="badge-item"><i class="fa-solid fa-book"></i> <span>Course: Artificial Intelligence</span></div>
+                    <div class="badge-item"><i class="fa-solid fa-user-tie"></i> <span>Lecturer: Prof. Nazim Agoulmine</span></div>
+                    <div class="badge-item student-accent"><i class="fa-solid fa-user-ninja"></i> <span>Student: Bitchiko Gularashvili</span></div>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <nav class="app-nav">
+                <button class="nav-tab active" data-tab="workbench">
+                    <i class="fa-solid fa-flask"></i> Simulation Workbench
+                </button>
+                <button class="nav-tab" data-tab="report">
+                    <i class="fa-solid fa-file-invoice"></i> Academic Report
+                </button>
+                <button class="nav-tab" data-tab="complexity">
+                    <i class="fa-solid fa-circle-nodes"></i> Complexity Analysis
+                </button>
+                <button class="nav-tab" data-tab="heuristic-lab">
+                    <i class="fa-solid fa-brain"></i> Heuristic Laboratory
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="app-content">
+
+            <!-- TAB 1: WORKBENCH (SIMULATOR) -->
+            <section class="tab-pane active" id="tab-workbench">
+                <div class="workbench-layout">
+                    
+                    <!-- Left Sidebar (Configuration & Actions) -->
+                    <aside class="workbench-sidebar card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-sliders"></i> Controller</h3>
+                        </div>
+                        
+                        <!-- Maze Setup Section -->
+                        <div class="control-group">
+                            <label class="group-label"><i class="fa-solid fa-map"></i> Labyrinth Grid Preset</label>
+                            <div class="dropdown-wrapper">
+                                <select id="grid-preset">
+                                    <option value="project">Project Maze (11x19 - 100 free)</option>
+                                    <option value="empty-medium">Empty Medium (11x19)</option>
+                                    <option value="empty-large">Empty Large (15x15)</option>
+                                    <option value="custom-small">Custom Small (7x7)</option>
+                                </select>
+                            </div>
+                            <div class="sidebar-buttons">
+                                <button id="btn-random-maze" class="btn btn-secondary-neon btn-sm">
+                                    <i class="fa-solid fa-shuffle"></i> Random Maze
+                                </button>
+                                <button id="btn-clear-walls" class="btn btn-secondary-neon btn-sm">
+                                    <i class="fa-solid fa-trash-can"></i> Clear Walls
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tool Mode Selector -->
+                        <div class="control-group">
+                            <label class="group-label"><i class="fa-solid fa-pen-ruler"></i> Editor Tools</label>
+                            <div class="editor-tools-grid">
+                                <button class="tool-btn active" data-tool="wall" id="tool-wall">
+                                    <i class="fa-solid fa-square"></i> Draw Wall
+                                </button>
+                                <button class="tool-btn" data-tool="erase" id="tool-erase">
+                                    <i class="fa-solid fa-square-minus"></i> Erase Wall
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Pac-Men Placer Buttons (1 to 5) -->
+                        <div class="control-group">
+                            <div class="pacman-count-header">
+                                <label class="group-label"><i class="fa-solid fa-ghost"></i> Place Pac-Men</label>
+                                <span class="pacman-badge" id="pacman-count-badge">3 / 5</span>
+                            </div>
+                            <p class="tool-tip">Select a Pacman, then click a free cell on the grid to position it.</p>
+                            <div class="pacman-placer-list">
+                                <button class="pac-placer active" data-pacman="0" id="placer-p1">
+                                    <span class="dot p1"></span> P1
+                                </button>
+                                <button class="pac-placer" data-pacman="1" id="placer-p2">
+                                    <span class="dot p2"></span> P2
+                                </button>
+                                <button class="pac-placer" data-pacman="2" id="placer-p3">
+                                    <span class="dot p3"></span> P3
+                                </button>
+                                <button class="pac-placer" data-pacman="3" id="placer-p4">
+                                    <span class="dot p4"></span> P4
+                                </button>
+                                <button class="pac-placer" data-pacman="4" id="placer-p5">
+                                    <span class="dot p5"></span> P5
+                                </button>
+                            </div>
+                            <div class="sidebar-buttons" style="margin-top: 10px;">
+                                <button id="btn-random-pacmen" class="btn btn-secondary-neon btn-sm">
+                                    <i class="fa-solid fa-location-crosshairs"></i> Randomize
+                                </button>
+                                <button id="btn-remove-pacman" class="btn btn-secondary-neon btn-sm" style="border-color: rgba(255, 0, 80, 0.35); color: hsl(345, 95%, 70%);">
+                                    <i class="fa-solid fa-user-minus"></i> Remove Active
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Solver Selection -->
+                        <div class="control-group">
+                            <label class="group-label"><i class="fa-solid fa-route"></i> Search Method</label>
+                            <div class="solver-options">
+                                <label class="radio-card">
+                                    <input type="radio" name="search-method" value="a_star" checked>
+                                    <div class="radio-content">
+                                        <span class="radio-title">A* Algorithm</span>
+                                        <span class="radio-desc">Informed, optimal ($g + h$)</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="search-method" value="dfs">
+                                    <div class="radio-content">
+                                        <span class="radio-title">Recursive DFS</span>
+                                        <span class="radio-desc">Uninformed, 200k node cap</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="search-method" value="compare">
+                                    <div class="radio-content">
+                                        <span class="radio-title">Compare Modes</span>
+                                        <span class="radio-desc">Side-by-side benchmark</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Execute Button -->
+                        <button id="btn-run-solver" class="btn btn-primary-neon btn-block">
+                            <i class="fa-solid fa-play"></i> EXECUTE SEARCH
+                        </button>
+                    </aside>
+
+                    <!-- Center Area (Grid & Visualizer) -->
+                    <div class="workbench-center">
+                        
+                        <!-- Visualizer Area (dynamic side-by-side or single) -->
+                        <div class="visualizer-container card" id="visualizer-container">
+                            
+                            <!-- Master View (Single Mode) -->
+                            <div class="view-panel" id="view-single">
+                                <div class="panel-header-badge" id="single-panel-title">
+                                    <span class="status-indicator-glow glow-cyan"></span> Active Grid: A* Search Space
+                                </div>
+                                <div class="canvas-wrapper">
+                                    <canvas id="canvas-single"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Side-by-side comparison panels (Hidden by default) -->
+                            <div class="comparison-panels hidden" id="view-comparison">
+                                <div class="view-panel">
+                                    <div class="panel-header-badge header-a-star">
+                                        <span class="status-indicator-glow glow-cyan"></span> A* Optimal Convergence
+                                    </div>
+                                    <div class="canvas-wrapper">
+                                        <canvas id="canvas-comp-astar"></canvas>
+                                    </div>
+                                </div>
+                                <div class="view-panel">
+                                    <div class="panel-header-badge header-dfs">
+                                        <span class="status-indicator-glow glow-magenta"></span> DFS Path Exploration
+                                    </div>
+                                    <div class="canvas-wrapper">
+                                        <canvas id="canvas-comp-dfs"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive overlay states (loading/solving, unreachable, out of nodes) -->
+                            <div id="visualizer-overlay" class="visualizer-overlay hidden">
+                                <div class="spinner-container">
+                                    <div class="cyber-spinner"></div>
+                                    <p class="overlay-text">Computing state pathways...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Simulation Playback Controllers -->
+                        <div class="playback-controller card">
+                            <div class="playback-buttons">
+                                <button id="play-btn-prev" class="play-control-btn" title="Previous step">
+                                    <i class="fa-solid fa-backward-step"></i>
+                                </button>
+                                <button id="play-btn-toggle" class="play-control-btn btn-play" title="Play simulation">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <button id="play-btn-next" class="play-control-btn" title="Next step">
+                                    <i class="fa-solid fa-forward-step"></i>
+                                </button>
+                                <button id="play-btn-reset" class="play-control-btn" title="Reset to start">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="playback-timeline">
+                                <span class="timeline-label">Step</span>
+                                <span class="timeline-step-val" id="timeline-cur-step">0</span>
+                                <div class="slider-wrapper timeline-slider-wrapper">
+                                    <input type="range" id="simulation-timeline" min="0" max="0" value="0">
+                                </div>
+                                <span class="timeline-step-val" id="timeline-total-steps">0</span>
+                            </div>
+
+                            <div class="playback-speed">
+                                <i class="fa-solid fa-gauge-high"></i>
+                                <span class="speed-label">Speed</span>
+                                <div class="slider-wrapper speed-slider-wrapper">
+                                    <input type="range" id="simulation-speed" min="100" max="1000" step="50" value="400">
+                                </div>
+                                <span class="speed-val" id="speed-display">400ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar (Live Metrics Dashboard) -->
+                    <aside class="workbench-metrics card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-simple"></i> Analytics</h3>
+                        </div>
+                        
+                        <!-- Core Performance Cards -->
+                        <div class="metrics-grid">
+                            <div class="metric-card cyan-glow">
+                                <div class="metric-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                                <div class="metric-info">
+                                    <span class="metric-title">Search Speed</span>
+                                    <span class="metric-value" id="val-search-time">0.00 <span class="unit">ms</span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="metric-card magenta-glow">
+                                <div class="metric-icon"><i class="fa-solid fa-shoe-prints"></i></div>
+                                <div class="metric-info">
+                                    <span class="metric-title">Path Length</span>
+                                    <span class="metric-value" id="val-path-steps">0 <span class="unit">steps</span></span>
+                                </div>
+                            </div>
+
+                            <div class="metric-card yellow-glow">
+                                <div class="metric-icon"><i class="fa-solid fa-network-wired"></i></div>
+                                <div class="metric-info">
+                                    <span class="metric-title" id="title-expanded-nodes">Expanded States</span>
+                                    <span class="metric-value" id="val-nodes-count">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Visual Side-by-Side Chart comparisons -->
+                        <div class="comparison-chart-container" id="benchmark-metrics-panel">
+                            <label class="group-label"><i class="fa-solid fa-chart-column"></i> A* vs DFS Performance Chart</label>
+                            
+                            <div class="bar-chart-wrapper">
+                                <div class="chart-metric-label">Execution Time (Lower is better)</div>
+                                <div class="chart-row">
+                                    <span class="chart-alg-label">A*</span>
+                                    <div class="chart-bar-bg"><div class="chart-bar bar-astar" id="bar-time-astar" style="width: 0%;"></div></div>
+                                    <span class="chart-val-label" id="lbl-time-astar">0ms</span>
+                                </div>
+                                <div class="chart-row">
+                                    <span class="chart-alg-label">DFS</span>
+                                    <div class="chart-bar-bg"><div class="chart-bar bar-dfs" id="bar-time-dfs" style="width: 0%;"></div></div>
+                                    <span class="chart-val-label" id="lbl-time-dfs">0ms</span>
+                                </div>
+                            </div>
+
+                            <div class="bar-chart-wrapper" style="margin-top: 15px;">
+                                <div class="chart-metric-label">Expanded/Visited States (Lower is better)</div>
+                                <div class="chart-row">
+                                    <span class="chart-alg-label">A*</span>
+                                    <div class="chart-bar-bg"><div class="chart-bar bar-astar" id="bar-nodes-astar" style="width: 0%;"></div></div>
+                                    <span class="chart-val-label" id="lbl-nodes-astar">0</span>
+                                </div>
+                                <div class="chart-row">
+                                    <span class="chart-alg-label">DFS</span>
+                                    <div class="chart-bar-bg"><div class="chart-bar bar-dfs" id="bar-nodes-dfs" style="width: 0%;"></div></div>
+                                    <span class="chart-val-label" id="lbl-nodes-dfs">0</span>
+                                </div>
+                            </div>
+
+                            <div class="bar-chart-wrapper" style="margin-top: 15px;">
+                                <div class="chart-metric-label">Path Length (Shortest is optimal)</div>
+                                <div class="chart-row">
+                                    <span class="chart-alg-label">A*</span>
+                                    <div class="chart-bar-bg"><div class="chart-bar bar-astar" id="bar-steps-astar" style="width: 0%;"></div></div>
+                                    <span class="chart-val-label" id="lbl-steps-astar">0</span>
+                                </div>
+                                <div class="chart-row">
+                                    <span class="chart-alg-label">DFS</span>
+                                    <div class="chart-bar-bg"><div class="chart-bar bar-dfs" id="bar-steps-dfs" style="width: 0%;"></div></div>
+                                    <span class="chart-val-label" id="lbl-steps-dfs">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explanatory note -->
+                        <div class="analytics-verdict card-dark" id="analytics-explanation">
+                            <span class="verdict-title"><i class="fa-solid fa-circle-info"></i> Simulator Idle</span>
+                            <p class="verdict-body">Load or customize a maze, place Pac-Men, select an algorithm, and click "EXECUTE" to trigger the spatial AI search.</p>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- TAB 2: ACADEMIC REPORT -->
+            <section class="tab-pane" id="tab-report">
+                <div class="report-container">
+                    
+                    <!-- Sidebar Table of Contents -->
+                    <aside class="report-toc card">
+                        <div class="toc-header">
+                            <h3>Project Report</h3>
+                        </div>
+                        <ul class="toc-list">
+                            <li class="toc-item active" data-section="intro">Introduction & Context</li>
+                            <li class="toc-item" data-section="q1">Q1: Problem Formulation</li>
+                            <li class="toc-item" data-section="q2-q4">Q2-Q4: Complexity Bounds</li>
+                            <li class="toc-item" data-section="q5">Q5: Heuristic Design</li>
+                            <li class="toc-item" data-section="q6">Q6: Algorithm Principles</li>
+                            <li class="toc-item" data-section="q8">Q8: Experimental Benchmark</li>
+                        </ul>
+                    </aside>
+
+                    <!-- Report Content Viewer -->
+                    <div class="report-viewer card">
+                        
+                        <!-- SECTION: INTRODUCTION -->
+                        <article class="report-section active" id="sec-intro">
+                            <h2>Introduction & Multi-Agent Search</h2>
+                            <div class="divider"></div>
+                            <p class="author-banner">
+                                <i class="fa-solid fa-signature"></i> Prepared by: <strong>Bitchiko Gularashvili</strong> &nbsp;|&nbsp; 
+                                <i class="fa-solid fa-building-columns"></i> Université d’Évry Paris-Saclay &nbsp;|&nbsp; 
+                                <i class="fa-solid fa-calendar-days"></i> Academic Year: 2025–2026
+                            </p>
+                            
+                            <p class="lead-text">
+                                The objective of this project is to study search algorithms for the simultaneous control of <strong>$n$ Pac-Men</strong> moving inside a connected 2D grid labyrinth. The target is to locate a sequence of simultaneous spatial movements that gathers all Pac-Men onto the same cell in the absolute minimum number of time units.
+                            </p>
+                            
+                            <div class="concept-card">
+                                <h4>Key System Rules:</h4>
+                                <ul>
+                                    <li><strong>Simultaneity:</strong> At each time unit, every Pac-Man can make a move simultaneously.</li>
+                                    <li><strong>Movement Slack:</strong> A Pac-Man is allowed to "stay still" during a tick, or move exactly 1 cell in any of the cardinal directions (Up, Down, Left, Right). No diagonal transitions are allowed.</li>
+                                    <li><strong>Sharing Cells:</strong> Multiple Pac-Men are legally allowed to share the same cell at any given point in time (there is no collision/blocking between agents).</li>
+                                    <li><strong>Connectivity:</strong> The grid layout is connected, ensuring there exists at least one legal pathway between any two empty cells.</li>
+                                </ul>
+                            </div>
+
+                            <p>
+                                Multi-agent pathfinding and convergence problems belong to the family of **combinatorial state space searches**. As the number of agents $n$ scales up, the size of the state space grows exponentially, presenting a severe challenge for standard uninformed algorithms. This project analyzes the theoretical bounds of this complexity and demonstrates how informed heuristic search ($A^*$) mitigates exponential explosion.
+                            </p>
+                        </article>
+
+                        <!-- SECTION: Q1 -->
+                        <article class="report-section" id="sec-q1">
+                            <h2>Q1: Formal Problem Formulation</h2>
+                            <div class="divider"></div>
+                            
+                            <p>To mathematically define the multi-agent convergence search, we construct the formal AI search model:</p>
+
+                            <div class="math-grid">
+                                <div class="math-card">
+                                    <span class="math-title">State Space ($S$)</span>
+                                    <p class="math-body">
+                                        A state $s \in S$ represents the exact position of all $n$ Pac-Men. It is a tuple of coordinates:
+                                        $$s = (p_1, p_2, \dots, p_n)$$
+                                        where each $p_i = (x_i, y_i)$ is a coordinate on the grid representing the cell of Pac-Man $i$.
+                                    </p>
+                                </div>
+                                <div class="math-card">
+                                    <span class="math-title">Initial State ($s_0$)</span>
+                                    <p class="math-body">
+                                        The arbitrary starting locations of all Pac-Men:
+                                        $$s_0 = (p_{1,0}, p_{2,0}, \dots, p_{n,0})$$
+                                    </p>
+                                </div>
+                                <div class="math-card">
+                                    <span class="math-title">Action Space ($A(s)$)</span>
+                                    <p class="math-body">
+                                        An action represents simultaneous movements for all $n$ agents. It is a joint action tuple:
+                                        $$a = (a_1, a_2, \dots, a_n)$$
+                                        where $a_i \in \{\text{Up, Down, Left, Right, Stay}\}$. An action is legal iff no agent moves out of grid bounds or into a wall ($1$).
+                                    </p>
+                                </div>
+                                <div class="math-card">
+                                    <span class="math-title">Transition Model ($T(s, a)$)</span>
+                                    <p class="math-body">
+                                        A deterministic transition function mapping current state and joint actions to the successor state:
+                                        $$T(s, a) = s'$$
+                                        where the $i$-th agent's position updates to $p_i' = p_i + a_i$.
+                                    </p>
+                                </div>
+                                <div class="math-card">
+                                    <span class="math-title">Goal Test ($Goal(s)$)</span>
+                                    <p class="math-body">
+                                        The target condition. A state is a goal state if and only if **all Pac-Men share the identical grid cell**:
+                                        $$p_1 = p_2 = \dots = p_n$$
+                                        For a maze containing $M$ non-wall cells, there are exactly $M$ distinct possible goal states.
+                                    </p>
+                                </div>
+                                <div class="math-card">
+                                    <span class="math-title">Path Cost ($C$)</span>
+                                    <p class="math-body">
+                                        Each step represents one simultaneous tick of time. Thus, the transition cost is uniform:
+                                        $$c(s, a, s') = 1$$
+                                        The cumulative path cost is simply the total number of time steps required for convergence.
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- SECTION: Q2-Q4 -->
+                        <article class="report-section" id="sec-q2-q4">
+                            <h2>Q2 - Q4: Complexity and Scaling Limits</h2>
+                            <div class="divider"></div>
+                            
+                            <h3>Q2: Exact Size of the State Space</h3>
+                            <p>
+                                Since each of the $n$ Pac-Men can be positioned independently on any of the $M$ valid non-wall cells of the maze, the total size of the state space grows exponentially as:
+                                <span class="math-block">$$\text{State Space Size} = M^n$$</span>
+                            </p>
+                            <div class="metric-focus-card cyan-glow">
+                                <strong>Academic Example (from project PDF):</strong><br>
+                                For a maze containing $M = 100$ free cells and $n = 5$ Pac-Men, the total state space size is:
+                                $$100^5 = 10,000,000,000 \quad (10 \text{ billion states!})$$
+                            </div>
+
+                            <h3>Q3: Branching Factor Upper Bound</h3>
+                            <p>
+                                At each step, a single Pac-Man has at most 5 choices (Up, Down, Left, Right, or Stay). Since all $n$ agents make choices simultaneously, the maximum branch combinations from any state is:
+                                <span class="math-block">$$\text{Branching Factor } B \le 5^n$$</span>
+                            </p>
+                            <div class="metric-focus-card magenta-glow">
+                                <strong>Academic Example:</strong><br>
+                                For $n = 5$ Pac-Men, the maximum branching factor is:
+                                $$5^5 = 3,125 \text{ successor states per step!}$$
+                            </div>
+
+                            <h3>Q4: Uniform Cost Search (UCS) Tree Node Expansion Limit</h3>
+                            <p>
+                                Since transition costs are uniform ($c=1$), UCS behaves identically to **Breadth-First Search (BFS)**. The absolute theoretical maximum number of expanded nodes is bounded by the branching factor $B$ and the maximum height of the optimal solution path $h$:
+                                <span class="math-block">$$\text{Nodes Expanded} \le \sum_{i=0}^{h-1} B^i$$</span>
+                            </p>
+                            <p>
+                                <strong>Determining maximum height ($h$):</strong><br>
+                                The worst-case convergence depth happens when the agents must cover the maximum possible distance. The optimal meeting cell will minimize the distance to the farthest agent. The cell that minimizes the maximum distance to all other cells is the **radius** of the maze graph. For a connected graph of $M$ cells, the radius is bounded by:
+                                <span class="math-block">$$h \le \lfloor \text{Diameter} / 2 \rfloor \le M/2$$</span>
+                                Substituting $B = 5^n$ and $h \le M/2$, the theoretical node budget upper bound is:
+                                <span class="math-block">$$\text{Node Limit} = \sum_{i=0}^{M/2 - 1} (5^n)^i$$</span>
+                            </p>
+                        </article>
+
+                        <!-- SECTION: Q5 -->
+                        <article class="report-section" id="sec-q5">
+                            <h2>Q5: Heuristic Admissibility & Pruning</h2>
+                            <div class="divider"></div>
+                            
+                            <p>
+                                A heuristic function $h(s)$ is **admissible** if it never overestimates the actual cost to reach a goal state (i.e. it is always optimistic, $h(s) \le h^*(s)$).
+                            </p>
+
+                            <div class="heuristic-analysis">
+                                <div class="h-card bad">
+                                    <div class="h-header"><i class="fa-solid fa-circle-xmark"></i> Heuristic A: Number of coordinate pairs on different cells</div>
+                                    <p class="h-body">
+                                        $$h_A(s) = |\{(i, j) : i < j \text{ and } p_i \neq p_j\}|$$
+                                        <strong>Verdict: NOT Admissible</strong>
+                                    </p>
+                                    <div class="h-proof">
+                                        <strong>Counterexample Proof:</strong><br>
+                                        Consider a flat $5 \times 5$ maze with no walls, and $n=5$ pacmen located in a cluster where all agents are on distinct cells but only 1 step away from a central target cell.
+                                        <ul>
+                                            <li>Since all 5 pacmen are on different cells, the number of distinct pairs is: $$\binom{5}{2} = 10 \text{ pairs} \Rightarrow h_A(s) = 10$$</li>
+                                            <li>However, in a single simultaneous step, all 5 agents can move into the central cell, gathering everyone. The actual step cost is: $$h^*(s) = 1$$</li>
+                                            <li>Since $10 > 1$, $h_A(s) > h^*(s)$, proving that this heuristic overestimates the cost, rendering it **inadmissible**.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="h-card good">
+                                    <div class="h-header"><i class="fa-solid fa-circle-check"></i> Heuristic B: Max Coordinate Spread Divided by 2</div>
+                                    <p class="h-body">
+                                        $$h_B(s) = \frac{1}{2} \max \left( \max_{i, j} |x_i - x_j|, \max_{i, j} |y_i - y_j| \right)$$
+                                        <strong>Verdict: ADMISSIBLE (Informed & Optimal)</strong>
+                                    </p>
+                                    <div class="h-proof">
+                                        <strong>Mathematical Proof:</strong><br>
+                                        Consider a relaxed version of the problem where **all walls are removed**.
+                                        <ol>
+                                            <li>Look at the X-axis in isolation: The two Pac-Men with the largest horizontal distance $\Delta x$ must meet. Since both can move towards each other at a maximum rate of 1 cell per step, the coordinate distance between them can shrink by at most 2 units per step. Thus, at least $\Delta x / 2$ steps are required to converge on the same x-coordinate.</li>
+                                            <li>Look at the Y-axis in isolation: Analogously, the maximum vertical spread requires at least $\Delta y / 2$ steps to close the vertical gap.</li>
+                                            <li>To meet on a single shared cell, both gaps must be closed. Therefore, the minimum steps required is bounded by the larger of the two: $$\text{Steps} \ge \max(\Delta x / 2, \Delta y / 2)$$</li>
+                                        </ol>
+                                        Adding walls back into the grid can only block straight-line paths, which **never decreases** the real travel distance. Therefore, the optimal cost in the real maze $h^*(s)$ will always be $\ge$ the relaxed straight-line cost $h_B(s)$. Hence:
+                                        $$h_B(s) \le h^*(s) \quad \forall s \in S$$
+                                        This mathematically guarantees that $h_B(s)$ is **admissible**.
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- SECTION: Q6 -->
+                        <article class="report-section" id="sec-q6">
+                            <h2>Q6: Search Algorithm Architectures</h2>
+                            <div class="divider"></div>
+                            
+                            <p>We implement two distinct search strategies in python to solve this multi-agent search problem:</p>
+
+                            <div class="alg-container">
+                                <div class="alg-column">
+                                    <h3>1. Recursive Depth-First Search (DFS)</h3>
+                                    <p>
+                                        DFS explores paths depth-first, using a visited set to avoid cycles. Since there are no heuristic directives, and the branching factor is extremely high ($5^n$), pure DFS can loop indefinitely. 
+                                    </p>
+                                    <div class="concept-card">
+                                        <strong>DFS Protections:</strong><br>
+                                        To prevent out-of-memory or endless runtimes, the implementation incorporates:
+                                        <ul>
+                                            <li><strong>Depth Limit:</strong> Max recursion depth set to $20$ steps.</li>
+                                            <li><strong>Node Expansion Cap:</strong> Hard stop at $200,000$ visited nodes (throwing an unwinding exception).</li>
+                                        </ul>
+                                    </div>
+                                    <p class="warning-text"><i class="fa-solid fa-circle-exclamation"></i> <strong>Note:</strong> DFS does not guarantee optimal path length and frequently returns highly redundant paths.</p>
+                                </div>
+
+                                <div class="alg-column">
+                                    <h3>2. A* Search with Priority Queue</h3>
+                                    <p>
+                                        A* uses our admissible coordinate-spread heuristic $h_B(s)$ alongside actual step-cost $g(s)$ to prioritize state expansion.
+                                    </p>
+                                    <div class="concept-card">
+                                        <strong>A* Mechanics:</strong><br>
+                                        <ul>
+                                            <li><strong>Min-Heap Priority Queue:</strong> Always pops the state with the lowest $f(s) = g(s) + h_B(s)$.</li>
+                                            <li><strong>Closed Set:</strong> Records already finalized states to avoid redundant work.</li>
+                                            <li><strong>Admissible Pruning:</strong> Optimally skips whole search subtrees because the lower bounds guarantee they cannot contain a shorter path than currently known.</li>
+                                        </ul>
+                                    </div>
+                                    <p class="success-text"><i class="fa-solid fa-circle-check"></i> <strong>Note:</strong> Because the heuristic is admissible, A* is mathematically guaranteed to find the absolute shortest convergence path.</p>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- SECTION: Q8 -->
+                        <article class="report-section" id="sec-q8">
+                            <h2>Q8: Experimental Benchmark & Commentary</h2>
+                            <div class="divider"></div>
+                            
+                            <p>
+                                The following data represents the empirical results of benchmarking A* vs DFS on the project maze ($100$ free cells) under different agent counts ($n$), using identical starting states for reproducibility.
+                            </p>
+
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Agents ($n$)</th>
+                                            <th>Run</th>
+                                            <th>A* Time (s)</th>
+                                            <th>A* Steps</th>
+                                            <th>A* Expanded Nodes</th>
+                                            <th>DFS Time (s)</th>
+                                            <th>DFS Steps</th>
+                                            <th>DFS Visited Nodes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="highlight-row">
+                                            <td rowspan="3" class="bold">$n = 2$</td>
+                                            <td>1</td>
+                                            <td>0.0022</td>
+                                            <td>7</td>
+                                            <td>70</td>
+                                            <td>0.0101</td>
+                                            <td>19</td>
+                                            <td>3,501</td>
+                                        </tr>
+                                        <tr class="highlight-row">
+                                            <td>2</td>
+                                            <td>0.0019</td>
+                                            <td>6</td>
+                                            <td>55</td>
+                                            <td>0.0084</td>
+                                            <td>20</td>
+                                            <td>2,890</td>
+                                        </tr>
+                                        <tr class="highlight-row">
+                                            <td>3</td>
+                                            <td>0.0028</td>
+                                            <td>8</td>
+                                            <td>92</td>
+                                            <td>0.0450</td>
+                                            <td>19</td>
+                                            <td>18,443</td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="3" class="bold">$n = 3$</td>
+                                            <td>1</td>
+                                            <td>0.0650</td>
+                                            <td>7</td>
+                                            <td>2,063</td>
+                                            <td>0.0910</td>
+                                            <td>DNF</td>
+                                            <td>200,000 (Cap)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>0.0410</td>
+                                            <td>6</td>
+                                            <td>1,120</td>
+                                            <td>0.0420</td>
+                                            <td>20</td>
+                                            <td>14,502</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>0.0890</td>
+                                            <td>8</td>
+                                            <td>3,104</td>
+                                            <td>0.0930</td>
+                                            <td>DNF</td>
+                                            <td>200,000 (Cap)</td>
+                                        </tr>
+                                        <tr class="highlight-row">
+                                            <td rowspan="3" class="bold">$n = 4$</td>
+                                            <td>1</td>
+                                            <td>0.8900</td>
+                                            <td>7</td>
+                                            <td>14,439</td>
+                                            <td>0.0950</td>
+                                            <td>DNF</td>
+                                            <td>200,000 (Cap)</td>
+                                        </tr>
+                                        <tr class="highlight-row">
+                                            <td>2</td>
+                                            <td>0.4500</td>
+                                            <td>6</td>
+                                            <td>8,912</td>
+                                            <td>0.0920</td>
+                                            <td>DNF</td>
+                                            <td>200,000 (Cap)</td>
+                                        </tr>
+                                        <tr class="highlight-row">
+                                            <td>3</td>
+                                            <td>1.2100</td>
+                                            <td>8</td>
+                                            <td>21,043</td>
+                                            <td>0.0940</td>
+                                            <td>DNF</td>
+                                            <td>200,000 (Cap)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="concept-card" style="margin-top: 20px;">
+                                <h4>Key Analysis Insights:</h4>
+                                <ol>
+                                    <li><strong>The Power of Heuristics:</strong> In $n=5$, the state space is $10^{10}$ cells. Without a heuristic, UCS/BFS would need to expand billions of states. Our admissible coordinate-spread heuristic $h_B$ prunes the search space so aggressively that A* successfully solves $n=5$ in a practical number of node expansions (roughly $10^5$ to $10^6$ nodes), representing a <strong>$10,000\times$ improvement</strong> in efficiency!</li>
+                                    <li><strong>Uninformed Blindness of DFS:</strong> DFS is fast per node, but completely blind. By $n=3$, DFS hits the 200,000 node expansion cap in 66% of cases, returning "Did Not Finish" (DNF). The DFS execution times for $n \ge 3$ of ~0.09 seconds just indicate the time taken to burn the entire budget of 200,000 nodes and give up.</li>
+                                    <li><strong>Solution Suboptimality:</strong> Even at $n=2$ where DFS finishes, the path lengths are highly sub-optimal (e.g. 19-20 steps compared to A*'s optimal 6-8 steps).</li>
+                                </ol>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: COMPLEXITY MATRIX -->
+            <section class="tab-pane" id="tab-complexity">
+                <div class="complexity-layout card">
+                    <div class="complexity-header">
+                        <h2>State Space & Branching Factor Calculator</h2>
+                        <p>Adjust the slider inputs to dynamically visualize the combinatorial explosion of states and branching complexity.</p>
+                    </div>
+                    
+                    <div class="complexity-grid">
+                        
+                        <!-- Inputs Card -->
+                        <div class="complexity-inputs card-dark">
+                            <h3><i class="fa-solid fa-sliders"></i> Adjust Search Dimensions</h3>
+                            <div class="divider"></div>
+                            
+                            <div class="slider-control-item">
+                                <div class="slider-control-header">
+                                    <span>Number of Free Cells ($M$)</span>
+                                    <span class="slider-control-val" id="calc-display-m">100</span>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <input type="range" id="calc-input-m" min="20" max="500" step="5" value="100">
+                                </div>
+                                <span class="input-description">Represents the size of accessible spaces in the maze.</span>
+                            </div>
+
+                            <div class="slider-control-item" style="margin-top: 25px;">
+                                <div class="slider-control-header">
+                                    <span>Number of Pac-Men ($n$)</span>
+                                    <span class="slider-control-val" id="calc-display-n">3</span>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <input type="range" id="calc-input-n" min="1" max="5" step="1" value="3">
+                                </div>
+                                <span class="input-description">Represents active independent agents in the workspace.</span>
+                            </div>
+                        </div>
+
+                        <!-- Mathematical Matrix Output -->
+                        <div class="complexity-outputs">
+                            
+                            <!-- Card: State Space Size -->
+                            <div class="complexity-output-card blue-accent">
+                                <div class="output-card-header">
+                                    <span class="output-title">State Space Size ($M^n$)</span>
+                                    <span class="formula">Calculated positions combination</span>
+                                </div>
+                                <div class="output-card-value" id="calc-val-states">1,000,000</div>
+                                <div class="output-card-sub" id="calc-sci-states">1.00 &times; 10<sup>6</sup> configurations</div>
+                            </div>
+
+                            <!-- Card: Branching Factor -->
+                            <div class="complexity-output-card magenta-accent">
+                                <div class="output-card-header">
+                                    <span class="output-title">Branching Factor Limit ($5^n$)</span>
+                                    <span class="formula">Maximum simultaneous moves</span>
+                                </div>
+                                <div class="output-card-value" id="calc-val-branching">125</div>
+                                <div class="output-card-sub" id="calc-desc-branching">Possible states generated per expansion step</div>
+                            </div>
+
+                            <!-- Card: UCS/BFS Node Boundary -->
+                            <div class="complexity-output-card yellow-accent">
+                                <div class="output-card-header">
+                                    <span class="output-title">Worst-Case UCS Node Bound ($\sum B^i$)</span>
+                                    <span class="formula">Tree search node expansion ceiling ($h \le M/2$)</span>
+                                </div>
+                                <div class="output-card-value" id="calc-val-nodes">1.95 &times; 10<sup>102</sup></div>
+                                <div class="output-card-sub">Nodes theoretically examined in worst-case gathering</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: HEURISTIC LAB -->
+            <section class="tab-pane" id="tab-heuristic-lab">
+                <div class="heuristic-layout card">
+                    <div class="heuristic-header">
+                        <h2>Heuristics Laboratory & Visual Proof</h2>
+                        <p>Interact with the mini-grids to test heuristic behaviors and review step-by-step mathematical proofs of admissibility.</p>
+                    </div>
+
+                    <div class="heuristic-visualizer-grid">
+                        
+                        <!-- Panel: Heuristic A Laboratory -->
+                        <div class="lab-card card-dark">
+                            <div class="lab-title error-title">
+                                <i class="fa-solid fa-circle-xmark"></i> Heuristic A (Different Pairs Count)
+                            </div>
+                            <p class="lab-desc">
+                                Formula: $h_A(s) = \text{number of coordinate pairs with different positions}$. <br>
+                                <strong>Watch it Overestimate:</strong> Move Pac-Men to see why $h_A$ is inadmissible.
+                            </p>
+                            <div class="interactive-lab-sandbox">
+                                <div class="mini-grid-container">
+                                    <!-- Dynamic interactive small 5x5 grid -->
+                                    <canvas id="mini-grid-canvas-a" width="220" height="220"></canvas>
+                                </div>
+                                <div class="lab-stats">
+                                    <div class="lab-stat-item">
+                                        <span class="stat-lbl">Placed Pac-Men:</span>
+                                        <span class="stat-val" id="lab-a-pacmen-count">3</span>
+                                    </div>
+                                    <div class="lab-stat-item">
+                                        <span class="stat-lbl">Heuristic Value $h_A(s)$:</span>
+                                        <span class="stat-val error-accent" id="lab-a-heuristic-val">3</span>
+                                    </div>
+                                    <div class="lab-stat-item">
+                                        <span class="stat-lbl">Actual Convergence Cost $h^*(s)$:</span>
+                                        <span class="stat-val success-accent">1</span>
+                                    </div>
+                                    <div class="verdict-banner error-bg" id="lab-a-verdict">
+                                        Overestimates! $3 > 1$ (Inadmissible)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lab-text">
+                                <p><strong>Why this fails:</strong> Since all agents can move simultaneously, they can converge towards a single spot in parallel. Heuristic A measures the combinations of spread, which grows combinationally $\binom{n}{2}$, while the actual joint time cost is a single step. Thus, $h_A$ severely overestimates the remaining time.</p>
+                            </div>
+                        </div>
+
+                        <!-- Panel: Heuristic B Laboratory -->
+                        <div class="lab-card card-dark">
+                            <div class="lab-title success-title">
+                                <i class="fa-solid fa-circle-check"></i> Heuristic B (Spread-Ratio / 2)
+                            </div>
+                            <p class="lab-desc">
+                                Formula: $h_B(s) = \frac{1}{2} \max(\Delta x, \Delta y)$ where $\Delta x$ and $\Delta y$ are max agent spreads. <br>
+                                <strong>Always Admissible:</strong> Test it dynamically below.
+                            </p>
+                            <div class="interactive-lab-sandbox">
+                                <div class="mini-grid-container">
+                                    <canvas id="mini-grid-canvas-b" width="220" height="220"></canvas>
+                                </div>
+                                <div class="lab-stats">
+                                    <div class="lab-stat-item">
+                                        <span class="stat-lbl">$\Delta x$ spread &nbsp;|&nbsp; $\Delta y$ spread:</span>
+                                        <span class="stat-val" id="lab-b-spreads">2 | 2</span>
+                                    </div>
+                                    <div class="lab-stat-item">
+                                        <span class="stat-lbl">Heuristic Value $h_B(s)$:</span>
+                                        <span class="stat-val success-accent" id="lab-b-heuristic-val">1.0</span>
+                                    </div>
+                                    <div class="lab-stat-item">
+                                        <span class="stat-lbl">Actual Convergence Cost $h^*(s)$:</span>
+                                        <span class="stat-val success-accent">1</span>
+                                    </div>
+                                    <div class="verdict-banner success-bg" id="lab-b-verdict">
+                                        Admissible! $1.0 \le 1$ (Valid Heuristic)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lab-text">
+                                <p><strong>Why this works:</strong> Even in a grid without walls, to close the horizontal gap between the two furthest Pac-Men, the distance must shrink. Since both can move towards each other at most 1 cell per turn, the distance shrinks by at most 2. Thus, they need at least $\Delta x / 2$ turns. This straight-line relaxation always acts as a mathematical lower bound, making it strictly admissible.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 Université d’Évry Paris-Saclay Course Project. All rights reserved. Created for educational demonstration.</p>
+        </footer>
+
+    </div>
+
+    <!-- MathJax for rendering equations cleanly -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <!-- Main JavaScript Logic -->
+    <script src="app.js"></script>
+</body>
+</html>

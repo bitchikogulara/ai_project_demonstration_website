@@ -1,0 +1,451 @@
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+Artificial Intelligence - Final Project
+Université d’Évry Paris-Saclay
+2025–2026
+
+Course: Artificial Intelligence
+Lecturer: Nazim Agoulmine
+
+Prepared by:
+Bitchiko Gularashvili
+
+1
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+INTRODUCTION
+
+The objective of this project is to study a search problem involving several Pac-Men moving
+simultaneously inside a maze. The goal is to gather all Pac-Men on the same cell using the
+minimum number of movements. This problem belongs to the domain of informed search and
+heuristic algorithms studied in Artificial Intelligence.
+In this report, we formulate the problem, analyze the complexity of the search space, study the
+admissibility of heuristics, and present the principles of DFS and A* algorithms.
+
+2
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+1) Problem Formulation:
+To formulate our problem, we firstly need to somehow represent the maze, for that we can use a
+grid, where 0’s will represent the empty spaces where Pac-Man can be placed/moved, and 1’s will
+represent the walls where the Pac-Man can’t be placed/moved.
+In our example, the grid will be:
+grid = [
+[1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1] ,
+[1 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 1] ,
+[1 , 0 , 1 , 1 , 0 , 1 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 0 , 1 , 1 , 0 , 1] ,
+[1 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 1] ,
+[1 , 0 , 1 , 0 , 1 , 1 , 0 , 1 , 1 , 0 , 1 , 1 , 0 , 1 , 1 , 0 , 1 , 0 , 1] ,
+[1 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 1] ,
+[1 , 0 , 1 , 0 , 1 , 1 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 1 , 0 , 1 , 0 , 1] ,
+[1 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 1] ,
+[1 , 0 , 1 , 1 , 0 , 1 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 0 , 1 , 1 , 0 , 1] ,
+[1 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 1] ,
+[1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1]
+]
+
+(or we can exclude the edges, but this was my design choice here)
+
+To define the state, we also need to provide the positions of each Pac-Man; for that, we can use a
+simple list containing their coordinates.
+in our example: [(1,5),(9,5),(10,3),(4,10),(12,1)]
+
+Initial State is the starting positions of the
+Pac-Men, for us I have already started it in
+our previous example.
+
+Convention of the coordinate system
+
+In general Pac-Man can have these possible
+actions to move (up,down,left,right,stay) =
+((x,y-1),(x,y+1),(x-1,y),(x+1,y),(x,y))
+which
+means that for n Pac-Men, there will be 5 n
+actions at most.
+
+But we should also take into account that not all of these actions are always legal, and the legal
+actions are the ones that do not allow Pac-Man to enter a wall.
+
+3
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+A state is considered Goal State if in the state all of the Pac-Men are in the same place.
+So the state - [(x1,y1),(x2,y2),...,(xn,yn)] will be a goal state if
+
+1=x 2=...=xn
+{ yx 1=
+y 2=...= yn
+
+For the maze where there is M number of free cells, will be M number of possible goal states, of
+course, some of them will be more optimal than others for specific initial states.
+Finally, as the cost of a path, we can take the number of steps that make it up, because each
+action/step costs a fixed value of one unit of time.
+
+2) Exact Size of State Space:
+Based on our rules, each Pac-Man can be placed on any free cell, so if there is M number of
+free/nonwall cells and n number of Pac-Men the exact size of state space will be Mn because each
+of n Pac-Men can be placed on M different cells.
+In our example it will be 1005 = 10000000000
+3) Upper limit of the branch factor:
+in the first part (Problem formulation) of this Exercise we have already shown that for n Pac-Men
+there is 5n actions maximum, which directly translates into branch factors upper limit since these
+are the only way to move from one state to another.
+In our example it will be 55 = 3125
+
+4) Limit of the number of nodes developed by Uniform Cost Search tree:
+First thing that we should notice here is that because the cost of every action is equal, the Uniform
+Cost Search Algorithm acts same as Breadth-First Search, so we can treat it as one.
+to find the node count of BFS we can use it’s height and branch factor.
+
+h−1
+
+∑ Bi
+i=0
+
+4
+
+will be the maximum number of nodes
+in BFS where h is height and B is the
+branch factor.
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+For our problem we have already found the branch factor in the 3rd part of our exercise and
+know that it is 5n (3125 in our example). To find the maximum height, we need to think about the
+worst case scenario — when do all n Pac-Men take the longest to converge? Since all Pac-Men
+move simultaneously at each step, the time to gather them all at some cell c is exactly the
+distance from the farthest Pac-Man to c. The best meeting cell minimizes this — that is
+the radius of the maze, which for any connected maze of M cells is at most ⌊diameter/2⌋ ≤ M/2.
+Notice that this bound depends only on the maze itself, not on n: adding more Pac-Men doesn't
+change the radius, since we still get to pick the meeting cell freely. So h ≤ M/2 holds for any
+number of Pac-Men.
+M /2−1
+
+so final formula for the limit will be
+
+∑ Bi
+i=0
+
+One will argue that the limit will be lower than that because of the edges and some other limiting
+factors, but first of all we are setting the upper limit and our estimation is 100% higher than (or
+not less than) the actual value. For large numbers we can even simplify this to the largest
+member of the Sum — BM/2−1 because of the huge difference in size compared to others.
+
+5) Are the following heuristics Admissible?
+a)
+
+The number of Pac-Men on different cells.
+
+to answer this question we should remember that a heuristic function is admissible only if it never
+overestimates the cost of reaching the goal.
+in this first function example, lets show one example when it estimates cost of reaching the goal to
+be higher than it really is.
+lets take 5x5 maze with no walls (Except the edges) and the state [(1,2),(2,1),(2,2),(2,3),(3,2)].
+as we can see, all the Pac-Men are on the different cells, therefore our heuristic will estimate the
+value 5, however the real cost of reaching the goal from this state is 1, because all the Pac-Men
+can move onto cell (2,2) in one move. therefore we can come to conclusion that the given
+heuristic function is not admissible, because it overestimated the cost.
+
+5
+
+Artificial Intelligence - Final Project
+
+b)
+
+Bitchiko Gularashvili
+
+1
+h(( x 1 , y 1 ) , ... ,( x n , y n ))= max { max i , j|x i −x j|, max i , j|y i − y j|}
+2
+(longest distance between any 2 Pac-Men either on x or y axis, devided by 2)
+
+lets assume we have a maze with no walls (except the edges) and look at the two axes separately.
+On the x-axis, take the pair of Pac-Men with the largest x-spread Δx — these two need to close
+that gap, and since both can move at most one cell per time unit, the gap shrinks by at most 2 per
+step, so they need at least Δx/2 steps to end up on the same x. The exact same reasoning applies
+on the y-axis with the largest y-spread Δy, giving at least Δy/2 steps. The real meeting time has to
+satisfy both lower bounds at once, so it is at least max(Δx/2, Δy/2) — and that is exactly what our
+heuristic returns. This is essentially solving a relaxed version of our problem, one where walls are
+removed. Since removing constraints from a problem can only decrease or maintain the cost —
+never increase it — the optimal cost of the relaxed problem is always ≤ the optimal cost of the real
+problem. Now lets add some walls back into our maze: they can only block the shortest path or
+leave it as it is, meaning the real cost stays the same or increases, while our heuristic value stays
+the same. Therefore our heuristic will never give us a value higher than the real one, which means
+that our heuristic is admissible.
+
+6
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+6) Two algorithms to solve the problem:
+before describing the two algorithms, lets fix what they have in common:
+• a state is the tuple of all n Pac-Men positions: ((x1,y1), ..., (xn,yn))
+• the goal test is checking that all n positions are equal
+• gen_neighbors(state) produces all successor states by moving each Pac-Man in
+one of 5 directions (up, down, left, right, stay), skipping moves that land on a wall
+or go
+out of the maze. up to 5^n successors per state
+• each transition has cost 1 (one time unit)
+we also keep a visited/closed set in both algorithms to avoid re-exploring the same state, since
+the state graph has cycles (a Pac-Man can always come back to where it was).
+Algorithm 1 — Recursive DFS:
+The idea is straightforward: from the current state, try every possible neighbor recursively,
+marking each state as visited so we don't loop forever. as soon as we reach the goal we return
+the path back up the recursion.
+function DFS(state, visited, path):
+if goal_test(state):
+return path
+visited.add(state)
+for next_state in gen_neighbors(state):
+if next_state not in visited:
+result = DFS(next_state, visited, path + [next_state])
+if result is not None:
+return result
+return None
+initial call: DFS(start_state, set(), [start_state])
+a small note here: DFS will return a solution, not necessarily the shortest one. it can also dive
+very deep before finding anything because of the huge branching factor (5n) we computed in
+Q3. but the question only asks us to solve the problem, so this is acceptable — and DFS uses
+very little memory, which is its main advantage over A*.
+
+7
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+Algorithm 2 — A* with priority queue:
+here we use the State class with attributes g (cost so far), h (heuristic from Q5b), f = g + h, and
+a parent pointer for path reconstruction. the priority queue always pops the state with the
+lowest f, so we always expand the most promising direction first.
+function A_star(start_state):
+open
+= priority_queue()
+closed = set()
+start_state.g = 0
+start_state.h = h(start_state)
+start_state.f = start_state.h
+start_state.parent = None
+push start_state into open
+
+// min-heap on f
+
+while open is not empty:
+current = pop state with lowest f from open
+if current in closed:
+continue
+
+// duplicate from heap, skip
+
+if goal_test(current):
+return reconstruct_path(current)
+
+// walk parent pointers
+
+closed.add(current)
+for next_state in gen_neighbors(current):
+if next_state in closed:
+continue
+next_state.g = current.g + 1
+next_state.h = h(next_state)
+next_state.f = next_state.g + next_state.h
+next_state.parent = current
+push next_state into open
+return None
+
+// no solution exists
+
+since our heuristic from Q5b is admissible, A* is guaranteed to return the optimal solution
+(minimum number of time units), unlike DFS. the trade-off is that we now keep states in memory
+in both the open heap and the closed set, which is heavier than DFS — but on this problem the
+heuristic prunes so much of the 5n branching that the saved exploration time more than makes
+up for it. we will see this clearly in the timing comparison at the end.
+
+8
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+Q7) Implementation in Python:
+
+now that both algorithms are described at the pseudo-code level, the rest of the project is to
+translate them into Python and compare them on real data. The implementation follows the
+structure from Q6 almost line for line: a State class holding the Pac-Men positions together
+with g, h, f and a parent pointer, a heuristic function implementing the formula from Q5b,
+a gen_neighbors function producing the up to 5n successors while filtering out walls and out-ofbounds moves, and finally the two search functions DFS and A_star themselves. once both are
+working we run them on the same set of random starting configurations on the maze given in
+the problem and measure their execution times to see in practice the gap between an
+uninformed search and an informed one.
+the deliverable is split into two files for clarity. one of them — pacmen_solver.py — contains
+everything reusable: the State class, the maze representation, the heuristic, neighbour
+generation, A* and DFS. The other — demo.py — only imports from it, defines the project's
+specific maze, and runs the demonstrations and the benchmark. this way the algorithms
+themselves do not depend on any specific grid and can be reused on any other maze.
+
+The maze
+the maze is exactly the 11×19 grid given in
+the project — 100 free cells.
+
+The State class
+the State class is the canonical
+representation of the system state during
+the search. it holds the tuple of all Pac-Men
+positions, the cost so far g, the heuristic
+estimate h, the total cost f = g + h, and a
+parent pointer used to reconstruct the path
+once the goal is reached. it also
+defines __lt__ so that heapq can compare
+states
+by
+their f value,
+and __eq__ / __hash__ so we can use
+states as set elements and as dictionary
+keys.
+
+9
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+Maze setup and the precomputed neighbour table
+before any search starts, we precompute once for every free cell the tuple of cells reachable in
+one time-unit (up, down, left, right, stay), filtering out walls and out-of-bounds moves. this table
+is the main reason the search is fast — the inner loops never have to re-check walls. this is
+done in the constructor of PacmenProblem:
+
+The heuristic
+the heuristic is the formula we proved admissible in Q5b — half the maximum between the
+largest x-spread and the largest y-spread among the Pac-Men. for efficiency we compute the
+four bounds xmin, xmax, ymin, ymax in a single pass over the positions tuple instead of building
+two separate lists and scanning them.
+
+10
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+Neighbour generation
+each Pac-Man has 5 possible actions per step (4 directions + stay, matching the 5n branching of
+Q3 and the original wording "a pacman can stop"). the set of successor states is the cartesian
+product of each Pac-Man's individual valid moves — so we only generate combinations that are
+already valid, instead of generating 5n raw combos and discarding invalid
+ones. gen_neighbors returns full State objects so external callers can use them naturally:
+
+A*
+A* follows the standard heapq pattern. we keep a min-heap of nodes ordered by f, a closed set
+of finalized states, a parents map for path reconstruction, and a best_g dictionary recording the
+lowest g we have found so far for each known state. on each iteration we pop the most
+promising state; if it is already in closed it is a stale duplicate from an earlier push, so we skip it;
+if it is the goal we reconstruct and return the path; otherwise we expand it and push only those
+successors for which we found a strictly better path.
+inside the hot loop we work directly with raw position tuples rather than wrapping every
+successor into a State object. the State class still defines what a state is, but for the millions of
+successors A* briefly considers we only need the position tuple, the cost, and the parent link —
+and creating a fresh State for every one of them would dominate the runtime.
+
+11
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+Recursive DFS
+
+DFS is a direct recursive implementation
+as in Q6. on a problem with branching
+factor 5^n and no heuristic guidance,
+recursive DFS can wander for an
+enormous time before stumbling onto the
+goal, so we add two practical safety caps:
+a depth limit and a hard cap on the
+number of nodes touched, raised via an
+exception so the entire recursion stack
+unwinds at once. Note that the depth limit
+is a practical floor and not a theoretical
+bound: in practice the node cap binds
+long before we ever get close to depth
+limit on any non-trivial instance.
+
+Putting it all together — the demo
+the demo file is what is actually run. it does not contain any algorithm code: it just instantiates
+the solver on the project maze, displays one fully-rendered example of A* solving an instance
+step by step (so you can see the Pac-Men converging on the grid), and then runs the
+benchmark used in Q8.
+
+12
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+Q8) Execution times comparison and comment
+the project's maze has 100 free cells and the formulation uses n=5 Pac-Men. with a branching
+factor of 5^5 = 3125 per state and a state space of 100^5 = 10^10, this is a very demanding
+problem for any pure-Python implementation. to get a meaningful comparison we therefore run
+the same benchmark for several values of n (2, 3, 4, 5) — same algorithm, same maze, same
+heuristic, just varying the number of Pac-Men. this lets us see not only "which algorithm wins"
+but also how each algorithm scales as n grows, which is the real lesson.
+3 random starting configurations per n, same seed for both algorithms so each gets the same
+instances. for each run we measure execution time, the length of the returned path, and the
+number of states actually touched (expanded by A* / visited by DFS).
+
+(DNF = DFS hit the 200 000-node cap without ever reaching a state where all Pac-Men are on
+the same cell.)
+Comment on the results
+what these numbers show is exactly what the theory of Q3 / Q4 predicted, made concrete:
+1. A* always returns the optimal solution. every single run, every n. the heuristic from Q5b is
+admissible (we proved this in Q5b), so A* is guaranteed to be optimal, and the table reflects that
+— solution lengths of 5–9 steps depending on how spread out the Pac-Men start.
+2. A* scales with n exactly as the branching factor predicts. the number of expanded states
+grows roughly by a factor of ~50× per added Pac-Man (70 → 2063 → 14439 → 435884 → over
+a million on the worst run at n=5). this is the 5× of branching multiplied by the extra exploration
+the heuristic can no longer prune away. execution time grows even faster because each
+expansion itself does up to 5^n successor work. on n=5 we are firmly in the "minutes per
+instance" range — tractable, but heavy.
+
+13
+
+Artificial Intelligence - Final Project
+
+Bitchiko Gularashvili
+
+3. DFS only "wins" until n=2. at n=2 it actually finishes every run, but its solutions are already
+much worse than A*'s — about 5–10× too long. by n=3 it already misses one run out of three. at
+n=4 and n=5 it never finds anything within the 200 000-node budget, on any run. the constant
+~0.09 s for n ≥ 4 is just the time to burn the entire budget without ever stumbling onto the
+goal: DFS isn't fast on this problem, it's just giving up fast.
+4. the gap between the two algorithms is entirely the heuristic doing work. without it (UCS /
+BFS), A* would have to explore essentially the full state space — for n=5 that's 10^10 states,
+the upper bound from Q4. the heuristic from Q5b, despite being relatively loose, prunes enough
+to bring the actual exploration down to roughly 10^5–10^6 states, six to seven orders of
+magnitude better. that is the whole point of an informed search.
+so the final takeaway is the one we expected from the theory:
+•DFS is light and cheap per node, but on a problem with branching 5^n, no optimality guarantee,
+and no guidance, it is essentially blind. it cannot compete on this maze beyond n=2, and even
+there the path it returns is far from optimal.
+•A* with the admissible heuristic from Q5b trades extra bookkeeping (priority queue, closed set,
+best-g map) for optimality and for a search that is laser-focused on promising states. on this
+problem that trade is overwhelmingly worth it: A* always solves it, always optimally, on every n
+we tested, including the n=5 specified in the project formulation.
+
+14
+
+
