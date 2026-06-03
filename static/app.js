@@ -904,7 +904,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (dfs.found === false) {
             verdictHTML += `
                 <p class="verdict-body">
-                    <strong>DFS Failed to converge:</strong> The uninformed DFS hit the search ceiling of 200,000 nodes without finding a goal, proving the combinatorial explosion of a $5^n$ branching factor!
+                    <strong>DFS Failed to converge:</strong> The uninformed DFS hit the search ceiling of 400,000 nodes without finding a goal, proving the combinatorial explosion of a $5^n$ branching factor!
                     <br><br>
                     <strong>A* Admissible Pruning:</strong> A* successfully pruned the search tree with coordinate-spread lower bounds, converging optimally in <strong>${astar.steps} steps</strong> after expanding only <strong>${astar.nodes_count.toLocaleString()} states</strong>.
                 </p>

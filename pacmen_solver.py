@@ -343,7 +343,7 @@ class PacmenProblem:
     # -------------------------------------------------------------------
     # DFS
     # -------------------------------------------------------------------
-    def dfs(self, start_positions, max_depth=20, max_nodes=200_000):
+    def dfs(self, start_positions, max_depth=40, max_nodes=400_000):
         """
         Solve the problem with a recursive depth-first search.
 

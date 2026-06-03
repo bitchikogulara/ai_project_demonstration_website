@@ -407,7 +407,7 @@ but also how each algorithm scales as n grows, which is the real lesson.
 instances. for each run we measure execution time, the length of the returned path, and the
 number of states actually touched (expanded by A* / visited by DFS).
 
-(DNF = DFS hit the 200 000-node cap without ever reaching a state where all Pac-Men are on
+(DNF = DFS hit the 400 000-node cap without ever reaching a state where all Pac-Men are on
 the same cell.)
 Comment on the results
 what these numbers show is exactly what the theory of Q3 / Q4 predicted, made concrete:
@@ -429,7 +429,7 @@ Bitchiko Gularashvili
 
 3. DFS only "wins" until n=2. at n=2 it actually finishes every run, but its solutions are already
 much worse than A*'s — about 5–10× too long. by n=3 it already misses one run out of three. at
-n=4 and n=5 it never finds anything within the 200 000-node budget, on any run. the constant
+n=4 and n=5 it never finds anything within the 400 000-node budget, on any run. the constant
 ~0.09 s for n ≥ 4 is just the time to burn the entire budget without ever stumbling onto the
 goal: DFS isn't fast on this problem, it's just giving up fast.
 4. the gap between the two algorithms is entirely the heuristic doing work. without it (UCS /

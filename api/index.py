@@ -59,7 +59,7 @@ def api_solve():
             nodes_name = "expanded"
         elif algorithm == "dfs":
             # Defensive caps from the project report
-            path, expanded = problem.dfs(pacmen_start, max_depth=20, max_nodes=200000)
+            path, expanded = problem.dfs(pacmen_start, max_depth=40, max_nodes=400000)
             dt_ms = (time.perf_counter() - t0) * 1000
             nodes_name = "visited"
         else:
@@ -113,9 +113,9 @@ def api_compare():
         path_a, exp_a = problem.a_star(pacmen_start)
         t_a_ms = (time.perf_counter() - t0) * 1000
 
-        # Run DFS (depth=20, nodes=200000 cap per project parameters)
+        # Run DFS (depth=40, nodes=400000 cap per project parameters)
         t0 = time.perf_counter()
-        path_d, vis_d = problem.dfs(pacmen_start, max_depth=20, max_nodes=200000)
+        path_d, vis_d = problem.dfs(pacmen_start, max_depth=40, max_nodes=400000)
         t_d_ms = (time.perf_counter() - t0) * 1000
 
         # Serialize results

@@ -153,7 +153,7 @@
                                     <input type="radio" name="search-method" value="dfs">
                                     <div class="radio-content">
                                         <span class="radio-title">Recursive DFS</span>
-                                        <span class="radio-desc">Uninformed, 200k node cap</span>
+                                        <span class="radio-desc">Uninformed, 400k node cap</span>
                                     </div>
                                 </label>
                                 <label class="radio-card">
@@ -559,8 +559,8 @@
                                         <strong>DFS Protections:</strong><br>
                                         To prevent out-of-memory or endless runtimes, the implementation incorporates:
                                         <ul>
-                                            <li><strong>Depth Limit:</strong> Max recursion depth set to $20$ steps.</li>
-                                            <li><strong>Node Expansion Cap:</strong> Hard stop at $200,000$ visited nodes (throwing an unwinding exception).</li>
+                                            <li><strong>Depth Limit:</strong> Max recursion depth set to $40$ steps.</li>
+                                            <li><strong>Node Expansion Cap:</strong> Hard stop at $400,000$ visited nodes (throwing an unwinding exception).</li>
                                         </ul>
                                     </div>
                                     <p class="warning-text"><i class="fa-solid fa-circle-exclamation"></i> <strong>Note:</strong> DFS does not guarantee optimal path length and frequently returns highly redundant paths.</p>
@@ -644,7 +644,7 @@
                                             <td>2,063</td>
                                             <td>0.0910</td>
                                             <td>DNF</td>
-                                            <td>200,000 (Cap)</td>
+                                            <td>400,000 (Cap)</td>
                                         </tr>
                                         <tr>
                                             <td>2</td>
@@ -662,7 +662,7 @@
                                             <td>3,104</td>
                                             <td>0.0930</td>
                                             <td>DNF</td>
-                                            <td>200,000 (Cap)</td>
+                                            <td>400,000 (Cap)</td>
                                         </tr>
                                         <tr class="highlight-row">
                                             <td rowspan="3" class="bold">$n = 4$</td>
@@ -672,7 +672,7 @@
                                             <td>14,439</td>
                                             <td>0.0950</td>
                                             <td>DNF</td>
-                                            <td>200,000 (Cap)</td>
+                                            <td>400,000 (Cap)</td>
                                         </tr>
                                         <tr class="highlight-row">
                                             <td>2</td>
@@ -681,7 +681,7 @@
                                             <td>8,912</td>
                                             <td>0.0920</td>
                                             <td>DNF</td>
-                                            <td>200,000 (Cap)</td>
+                                            <td>400,000 (Cap)</td>
                                         </tr>
                                         <tr class="highlight-row">
                                             <td>3</td>
@@ -690,7 +690,7 @@
                                             <td>21,043</td>
                                             <td>0.0940</td>
                                             <td>DNF</td>
-                                            <td>200,000 (Cap)</td>
+                                            <td>400,000 (Cap)</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -700,7 +700,7 @@
                                 <h4>Key Analysis Insights:</h4>
                                 <ol>
                                     <li><strong>The Power of Heuristics:</strong> In $n=5$, the state space is $10^{10}$ cells. Without a heuristic, UCS/BFS would need to expand billions of states. Our admissible coordinate-spread heuristic $h_B$ prunes the search space so aggressively that A* successfully solves $n=5$ in a practical number of node expansions (roughly $10^5$ to $10^6$ nodes), representing a <strong>$10,000\times$ improvement</strong> in efficiency!</li>
-                                    <li><strong>Uninformed Blindness of DFS:</strong> DFS is fast per node, but completely blind. By $n=3$, DFS hits the 200,000 node expansion cap in 66% of cases, returning "Did Not Finish" (DNF). The DFS execution times for $n \ge 3$ of ~0.09 seconds just indicate the time taken to burn the entire budget of 200,000 nodes and give up.</li>
+                                    <li><strong>Uninformed Blindness of DFS:</strong> DFS is fast per node, but completely blind. By $n=3$, DFS hits the 400,000 node expansion cap in 66% of cases, returning "Did Not Finish" (DNF). The DFS execution times for $n \ge 3$ of ~0.09 seconds just indicate the time taken to burn the entire budget of 400,000 nodes and give up.</li>
                                     <li><strong>Solution Suboptimality:</strong> Even at $n=2$ where DFS finishes, the path lengths are highly sub-optimal (e.g. 19-20 steps compared to A*'s optimal 6-8 steps).</li>
                                 </ol>
                             </div>

@@ -90,7 +90,7 @@ def demo_single_instance(problem, n=3, seed=1):
 # Demo 2: benchmark A* vs DFS across n values
 # ---------------------------------------------------------------------------
 def demo_benchmark(problem, n_values=(2, 3, 4), runs_per_n=3,
-                   dfs_node_cap=200_000):
+                   dfs_node_cap=400_000):
     print("=" * 70)
     print("Demo 2 — A* vs DFS benchmark")
     print("=" * 70)
@@ -118,7 +118,7 @@ def demo_benchmark(problem, n_values=(2, 3, 4), runs_per_n=3,
 
             t0 = time.perf_counter()
             path_d, vis_d = problem.dfs(
-                start, max_depth=20, max_nodes=dfs_node_cap,
+                start, max_depth=40, max_nodes=dfs_node_cap,
             )
             t_d = time.perf_counter() - t0
             steps_d = len(path_d) - 1 if path_d else "DNF"
